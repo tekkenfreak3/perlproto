@@ -20,7 +20,7 @@ sub update {
 
     $class->SUPER::update();
 
-    $class->{x_speed} = step_towards($class->{x_speed}, 0, 1);
+    $class->{x_speed} = step_towards($class->{x_speed}, 0, 10);
 
     if (($class->y + $class->h) > 768)
     {
@@ -48,7 +48,7 @@ sub update {
 
     if (my @plat = grep({$_->contains($class->{x} + ($class->{w} / 2), $class->{y} + $class->{h} + 1)} @platforms))
     {
-        $class->{y_speed} = 0;
+        $class->{y_speed} = ($plat[0])->{y_speed};
         $class->{y} = ($plat[0])->y - $class->{h} - 1;
     }
     else
