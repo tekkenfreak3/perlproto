@@ -31,11 +31,11 @@ sub update {
     
     if ($keystate->[SDL::Events::SDLK_LEFT])
     {
-        $class->{x_speed} = -5;
+        $class->{x_speed} = -15;
     }
     if ($keystate->[SDL::Events::SDLK_RIGHT])
     {
-        $class->{x_speed} = 5;
+        $class->{x_speed} = 15;
     }
 
     if ($keystate->[SDL::Events::SDLK_UP])
