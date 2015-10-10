@@ -15,6 +15,15 @@ use Util;
 
 our @ISA = ("Sprite");
 
+sub new {
+    my ($class, $args) = @_;
+
+    my $self = $class->SUPER::new($args);
+
+    $self->{g} = 0;
+
+    return $self;
+}
 sub update {
     my ($class, $keystate, $objs) = @_;
 
@@ -40,8 +49,12 @@ sub update {
 
     if ($keystate->[SDL::Events::SDLK_UP])
     {
-        $class->{y_speed} = -20;
-        $class->{y} -= 1;
+        if ($class->{g})
+        {
+            $class->{y_speed} = -40;
+            $class->{y} -= 1;
+            $class->{g} = 0;
+        }
     }
 
     my @platforms = grep({$_->isa("Platform")} @obj_list);
@@ -56,6 +69,7 @@ sub update {
     {
         $class->{y_speed} = ($plat[0])->{y_speed};
         $class->{y} = ($plat[0])->y - $class->h - 1;
+        $class->{g} = 1;
     }
     elsif (grep({$_->contains_rect($class->{x}, $class->{y} - 1, 
                              $class->{w}, 1)} @platforms))
