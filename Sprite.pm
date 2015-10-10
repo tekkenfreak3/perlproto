@@ -66,7 +66,7 @@ sub h {
     return $class->{h};
 }
 
-sub contains
+sub contains_point
 {
     my ($class, $x, $y) = @_;
     my $ox = $class->{x};
@@ -76,6 +76,25 @@ sub contains
     
     return ($x >= $ox && $x <= $ox2) && ($y >= $oy && $y <= $oy2);
 }
+
+sub contains_rect
+{
+    my ($class, $x, $y, $w, $h) = @_;
+    my $ox = $class->{x};
+    my $oy = $class->{y};
+    my $ox2 =  $ox + $class->{w};
+    my $oy2 = $oy + $class->{h};
+    if (($x <= $ox2 && $x + $w >= $ox) || ($ox <= $x + $w && $ox2 >= $x))
+    {
+        if (($y <= $oy2 && $y + $h >= $oy) || ($oy <= $y + $h && $oy2 >= $y))
+        {
+            return 1;
+        }
+    }
+    return 0;
+
+}
+
 sub update
 {
     my ($class) = @_;

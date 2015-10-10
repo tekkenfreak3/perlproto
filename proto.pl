@@ -23,13 +23,15 @@ my $win = SDL::Video::set_video_mode(1024, 768, 32, SDL::Video::SDL_SWSURFACE);
 
 my $bg = SDL::Image::load("bg.jpg");
 
+my $plat_speed = 3;
+
 my @objects;
-@objects = (Player->new({image => "dino_small.png", x => 32, y => 50, w => 32, h =>32, running => \$running,
+@objects = (Player->new({image => "dino_small.png", x => 32, y => 0, w => 32, h =>32, running => \$running,
                             dest_surf => $win}),
-               Platform->new({image => "platform.png", x => 0, y=> 100, w => 1024, h => 16, dest_surf => $win, running => \$running,
+               Platform->new({image => "platform.png", x => 0, y=> 48, w => 1024, h => 16, dest_surf => $win, running => \$running,
                              y_speed => 3}));
 
-my $ticks = 0;
+my $ticks = 1;
 while ($running)
 {
     SDL::Events::pump_events();
@@ -45,11 +47,17 @@ while ($running)
                              $win,
                              SDL::Rect->new(0, 0, 1024, 768));
 
-
-    if ($ticks % 30 == 0)
+    if ($ticks % 300 == 0)
     {
-        push(@objects, @{Platform::gen_pair($win)});
+        $plat_speed++;
     }
+    
+    if ($ticks % 60 == 0)
+    {
+        push(@objects, @{Platform::gen_pair($win, $plat_speed)});
+    }
+
+
 
     foreach my $obj (@objects)
     {
@@ -59,7 +67,7 @@ while ($running)
     }
 
     SDL::Video::flip($win);
-    SDL::delay(1000/60);
+    SDL::delay(1000/30);
     $ticks++;
 #    say(@objects);
 }

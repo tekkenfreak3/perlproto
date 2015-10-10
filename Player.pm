@@ -46,11 +46,24 @@ sub update {
 
     my @platforms = grep({$_->isa("Platform")} @obj_list);
 
-    if (my @plat = grep({$_->contains($class->{x} + ($class->{w} / 2), $class->{y} + $class->{h} + 1)} @platforms))
+    if (grep({$_->contains_rect($class->x - 1, $class->y + 1, 
+                                $class->w + 2, $class->h - 4)} @platforms))
+    {
+        $class->{x_speed} = 0;
+    }
+    if (my @plat = grep({$_->contains_rect($class->{x}, $class->{y} + 30, 
+                             $class->{w}, 2)} @platforms))
     {
         $class->{y_speed} = ($plat[0])->{y_speed};
-        $class->{y} = ($plat[0])->y - $class->{h} - 1;
+        $class->{y} = ($plat[0])->y - $class->h - 1;
     }
+    elsif (grep({$_->contains_rect($class->{x}, $class->{y} - 1, 
+                             $class->{w}, 1)} @platforms))
+    {
+        $class->{y} = ($_[0])->y + ($_[0])->h + 1;
+        $class->{y_speed} = ($_)->{y_speed};
+    }
+
     else
     {
         $class->{y_speed} += 3 unless $class->{y_speed} > 10;
