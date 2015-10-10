@@ -21,6 +21,12 @@ sub update {
     $class->SUPER::update();
 
     $class->{x_speed} = step_towards($class->{x_speed}, 0, 1);
+
+    if (($class->y + $class->h) > 768)
+    {
+        ${$class->{running}} = 0;
+    }
+    
     my @obj_list = @{$objs};
     
     if ($keystate->[SDL::Events::SDLK_LEFT])
@@ -37,7 +43,6 @@ sub update {
         $class->{y_speed} = -20;
         $class->{y} -= 1;
     }
-
 
     my @platforms = grep({$_->isa("Platform")} @obj_list);
 

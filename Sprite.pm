@@ -12,6 +12,7 @@ sub new {
                       y => $args->{y},
                       w => $args->{w},
                       h => $args->{h},
+                      running => $args->{running},
                       x_speed => $args->{x_speed} || 0,
                       y_speed => $args->{y_speed} || 0,
                       obj_list => $args->{objs}, # A reference to the list of objects, nice for some things

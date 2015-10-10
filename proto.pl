@@ -11,6 +11,12 @@ use SDL::Events;
 use Player;
 use Platform;
 
+my $running = 1;
+sub end_game
+{
+    $running = 0;
+}
+
 SDL::init(SDL::SDL_INIT_EVERYTHING);
 
 my $win = SDL::Video::set_video_mode(1024, 768, 32, SDL::Video::SDL_SWSURFACE);
@@ -18,11 +24,12 @@ my $win = SDL::Video::set_video_mode(1024, 768, 32, SDL::Video::SDL_SWSURFACE);
 my $bg = SDL::Image::load("bg.jpg");
 
 my @objects;
-@objects = (Player->new({image => "dino_small.png", x => 0, y => 650, w => 32, h =>32,
+@objects = (Player->new({image => "dino_small.png", x => 0, y => 50, w => 32, h =>32, running => \$running,
                             dest_surf => $win}),
-               Platform->new({image => "platform.png", x => 0, y=> 700, w => 1024, h => 16, dest_surf => $win}));
+               Platform->new({image => "platform.png", x => 0, y=> 100, w => 1024, h => 16, dest_surf => $win, running => \$running,
+                             y_speed => 2}));
 
-my $running = 1;
+my $ticks = 0;
 while ($running)
 {
     SDL::Events::pump_events();
@@ -41,10 +48,12 @@ while ($running)
     foreach my $obj (@objects)
     {
         $obj->update($state, \@objects);
+      
         $obj->draw();
     }
 
     SDL::Video::flip($win);
     SDL::delay(1000/60);
+    $ticks++;
 }
 
