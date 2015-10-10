@@ -7,6 +7,9 @@ use SDL::Video;
 use SDL::Image;
 use SDL::Rect;
 use SDL::Events;
+use SDL::Mixer;
+use SDL::Mixer::Channels;
+use SDL::Mixer::Music;
 
 use Player;
 use Platform;
@@ -18,8 +21,12 @@ sub end_game
 }
 
 SDL::init(SDL::SDL_INIT_EVERYTHING);
+SDL::Mixer::init(SDL::Mixer::MIX_INIT_OGG);
 
-my $win = SDL::Video::set_video_mode(1024, 768, 32, SDL::Video::SDL_SWSURFACE);
+my $win = SDL::Video::set_video_mode(1024, 768, 32, SDL::Video::SDL_HWSURFACE);
+SDL::Mixer::open_audio(44100, SDL::Mixer::MIX_DEFAULT_FORMAT, 2, 1024);
+SDL::Mixer::Channels::allocate_channels(32);
+my $mus = SDL::Mixer::Music::load_MUS("thrash.ogg");
 
 my $bg = SDL::Image::load("bg.jpg");
 
@@ -30,6 +37,8 @@ my @objects;
                             dest_surf => $win}),
                Platform->new({image => "platform.png", x => 0, y=> 48, w => 1024, h => 16, dest_surf => $win, running => \$running,
                              y_speed => 3}));
+
+SDL::Mixer::Music::play_music($mus, -1);
 
 my $ticks = 1;
 while ($running)
