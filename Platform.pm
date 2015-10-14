@@ -1,6 +1,30 @@
 package Platform;
 use Sprite;
+use v5.18;
+use Coin;
 our @ISA = ("Sprite");
+
+sub new
+{
+    my ($class, $args) = @_;
+
+    my $self = $class->SUPER::new($args);
+
+    say (@{$self->{obj_list}});
+#    if (rand(10) == 1)
+#    {
+    @{$self->{obj_list}} = push(@{$self->{obj_list}}, Coin->new({x => int(rand(1024)), y => $self->y - 18}, w => 16, h => 16, dest_surf => $self->{dest_surf},
+                                           running => $self->{running}, image => "coin1.png", obj_list => $self->{obj_list}, y_speed => $self->{y_speed}));
+
+#    }
+
+    return $self;
+}
+
+sub setup
+{
+    my ($class, )
+}
 sub update
 {
     my ($class, $obj_list) = @_;
@@ -15,10 +39,10 @@ sub update
 
 sub gen_pair
 {
-    my ($dest, $speed) = @_;
+    my ($dest, $speed, $list) = @_;
 
-    my $first = Platform->new({image => "platform.png", x => -int(rand(1024 + 128) ), y => 0, y_speed => $speed || 3, w => 1024, h => 16, dest_surf => $dest});
-    my $second = Platform->new({image => "platform.png", x => $first->x + $first->w + int(rand(64) + 64), y => 0, y_speed => $speed || 3, w => 1024, h => 16, dest_surf => $dest});
+    my $first = Platform->new({image => "platform.png", x => -int(rand(1024 + 128) ), y => 0, y_speed => $speed || 3, w => 1024, h => 16, dest_surf => $dest, obj_list => $list});
+    my $second = Platform->new({image => "platform.png", x => $first->x + $first->w + int(rand(64) + 64), y => 0, y_speed => $speed || 3, w => 1024, h => 16, dest_surf => $dest, obj_list => $list});
 
     return [$first, $second];
 }

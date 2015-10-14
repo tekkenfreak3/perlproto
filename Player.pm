@@ -6,6 +6,8 @@ use v5.18;
 use SDL ':all';
 use SDL::Video;
 use SDL::Image;
+use SDL::Color;
+use SDL::TTF;
 use SDL::Rect;
 use SDL::Events;
 
@@ -21,8 +23,20 @@ sub new {
     my $self = $class->SUPER::new($args);
 
     $self->{g} = 0;
-
+    $self->{score} = 0;
+    $self->{font} = SDL::TTF::open_font("DejaVuSans.ttf", 12);
+    
     return $self;
+}
+
+sub draw {
+    my ($class) = @_;
+    $class->SUPER::draw();
+    my $fontsurf = SDL::TTF::render_text_blended($class->{font}, $class->{score}, SDL::Color->new(255, 255, 0));
+    
+    SDL::Video::blit_surface($fontsurf, SDL::Rect->new(0,
+                                                       0, $fontsurf->w, $fontsurf->h), $class->{dest_surf},
+                             SDL::Rect->new(0, 0, 1024, 768));
 }
 sub update {
     my ($class, $keystate, $objs) = @_;
@@ -64,6 +78,7 @@ sub update {
     {
         $class->{x_speed} = 0;
     }
+    
     if (my @plat = grep({$_->contains_rect($class->{x}, $class->{y} + 30, 
                              $class->{w}, 2)} @platforms))
     {
@@ -80,8 +95,19 @@ sub update {
 
     else
     {
-        $class->{y_speed} += 3 unless $class->{y_speed} > 10;
+        $class->{y_speed} += 3 unless $class->{y_speed} > 30;
     }
+
+    if (my @coins = grep($_->contains_rect($class->{x}, $class->{y},
+                                          $class->{w}, $class->{h}), grep($_->isa("Coin"), @{($class->{obj_list})})))
+    {
+        my @objs = @{($class->{obj_list})};
+        @objs = grep({$_ != $coins[0]} @objs); # Coins can only be one per platform
+        $class->{score} += 100;
+    }
+
+    $class->{score}++;
 }
 
 1;
+

@@ -5,6 +5,7 @@ use v5.14;
 use SDL ':all';
 use SDL::Video;
 use SDL::Image;
+use SDL::TTF;
 use SDL::Rect;
 use SDL::Events;
 use SDL::Mixer;
@@ -22,6 +23,7 @@ sub end_game
 
 SDL::init(SDL::SDL_INIT_EVERYTHING);
 SDL::Mixer::init(SDL::Mixer::MIX_INIT_OGG);
+SDL::TTF::init();
 
 my $win = SDL::Video::set_video_mode(1024, 768, 32, SDL::Video::SDL_HWSURFACE);
 SDL::Mixer::open_audio(44100, SDL::Mixer::MIX_DEFAULT_FORMAT, 2, 1024);
@@ -32,11 +34,14 @@ my $bg = SDL::Image::load("bg.jpg");
 
 my $plat_speed = 3;
 
-my @objects;
-@objects = (Player->new({image => "dino_small.png", x => 32, y => 0, w => 32, h =>32, running => \$running,
-                            dest_surf => $win}),
-               Platform->new({image => "platform.png", x => 0, y=> 48, w => 1024, h => 16, dest_surf => $win, running => \$running,
-                             y_speed => 3}));
+my @objects = ();
+my $objref = \@objects;
+say $objref . " IS A REFERENCE";
+push(@objects, Player->new({image => "dino_small.png", x => 32, y => 0, w => 32, h =>32, running => \$running,
+                            dest_surf => $win}));
+push(@objects, Platform->new({image => "platform.png", x => 0, y=> 48, w => 1024, h => 16, dest_surf => $win, running => \$running,
+                              y_speed => 3, obj_list => $objref}));
+
 
 SDL::Mixer::Music::play_music($mus, -1);
 
@@ -63,15 +68,12 @@ while ($running)
     
     if ($ticks % 60 == 0)
     {
-        push(@objects, @{Platform::gen_pair($win, $plat_speed)});
+        push(@objects, @{Platform::gen_pair($win, $plat_speed, \@objects)});
     }
-
-
 
     foreach my $obj (@objects)
     {
         $obj->update($state, \@objects);
-      
         $obj->draw();
     }
 
